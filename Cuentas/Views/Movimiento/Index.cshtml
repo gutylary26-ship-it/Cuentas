@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Cuentas.Models.Movimiento>
+
+@{
+    ViewData["Title"] = "Gestión de movimientos";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold text-primary mb-3">Gestión de movimientos</h2>
+    <p class="fw-bold lead">Listado de movimientos registrados</p>
+
+    <p>
+        <a asp-action="Create" class="btn btn-info bg-opacity-25 fw-bold">Agregar nuevo movimiento</a>
+    </p>
+
+    <table class="table table-hover table-striped align-middle text-nowrap">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Tipo)</th>
+                <th>@Html.DisplayNameFor(model => model.Concepto)</th>
+                <th>@Html.DisplayNameFor(model => model.Monto)</th>
+                <th>@Html.DisplayNameFor(model => model.Fecha)</th>
+                <th>@Html.DisplayNameFor(model => model.IdCuenta)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var tipoTexto = item.Tipo == 1 ? "Crédito" : "Débito";
+                var tipoClase = item.Tipo == 1 ? "bg-success" : "bg-danger";
+
+                <tr>
+                    <td>
+                        <span class="badge @tipoClase bg-opacity-50 fw-semibold">@tipoTexto</span>
+                    </td>
+                    <td>@item.Concepto</td>
+                    <td class="fw-bold">@item.Monto.ToString("C")</td>
+                    <td>@item.Fecha.ToString("yyyy-MM-dd")</td>
+                    <td>@item.IdCuenta</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm bg-opacity-25 fw-bold">Editar</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm bg-opacity-25 fw-bold">Detalles</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm bg-opacity-25 fw-bold">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

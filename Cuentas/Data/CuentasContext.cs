@@ -9,11 +9,17 @@ namespace Cuentas.Data
 {
     public class CuentasContext : DbContext
     {
-        public CuentasContext (DbContextOptions<CuentasContext> options)
+        public CuentasContext(DbContextOptions<CuentasContext> options)
             : base(options)
         {
         }
 
         public DbSet<Cuentas.Models.Cuenta> Cuenta { get; set; } = default!;
+        public DbSet<Cuentas.Models.Movimiento> Movimiento { get; set; } = default!;
+
+
     }
+
 }
+
+    

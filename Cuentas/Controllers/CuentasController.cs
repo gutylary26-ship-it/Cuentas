@@ -58,6 +58,7 @@ namespace Cuentas.Controllers
         {
             if (ModelState.IsValid)
             {
+                cuenta.balance = cuenta.creditos - cuenta.debitos;
                 _context.Add(cuenta);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -74,46 +75,53 @@ namespace Cuentas.Controllers
             }
 
             var cuenta = await _context.Cuenta.FindAsync(id);
+
             if (cuenta == null)
             {
                 return NotFound();
             }
+
+            if (cuenta.balance <= 0) // o cuenta.Estado == "Inactivo"
+            {
+                TempData["Error"] = "No se puede editar una cuenta inactiva.";
+                return RedirectToAction("Index");
+            }
+
             return View(cuenta);
         }
+
 
         // POST: Cuentas/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,numero,descripcion,creditos,debitos,balance")] Cuenta cuenta)
+        public async Task<IActionResult> Edit(int id, [Bind("descripcion")] Cuenta cuentaForm)
         {
-            if (id != cuenta.Id)
+            var cuentaDb = await _context.Cuenta.FindAsync(id);
+            if (cuentaDb == null)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+         
+            if (cuentaDb.Estado == "Inactivo" || cuentaDb.balance <= 0)
             {
-                try
-                {
-                    _context.Update(cuenta);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CuentaExists(cuenta.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                TempData["Error"] = "No se puede editar una cuenta inactiva.";
+                return RedirectToAction("Index");
             }
-            return View(cuenta);
+
+            if (!ModelState.IsValid)
+            {
+                return View(cuentaDb); 
+            }
+
+            cuentaDb.descripcion = cuentaForm.descripcion;
+
+            _context.Update(cuentaDb);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "La descripción de la cuenta se actualizó correctamente.";
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Cuentas/Delete/5

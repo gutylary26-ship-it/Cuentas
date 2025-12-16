@@ -1,16 +1,16 @@
 ﻿@model IEnumerable<Cuentas.Models.Cuenta>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Mi cuenta";
 }
 
 <div class="bg-info bg-opacity-25 mb-4 rounded shadow-sm">
-    <h1 class="display-4 fw-bold">Index</h1>
+    <h1 class="display-4 fw-bold">Gestion de cuentas</h1>
     <p class="fw-bold lead">Listado de cuentas registradas</p>
 </div>
 
 <p>
-    <a asp-action="Create" class="btn btn-info bg-opacity-25 fw-bold">Create New</a>
+    <a asp-action="Create" class="btn btn-info bg-opacity-25 fw-bold">Agregar nueva cuenta</a>
 </p>
 
 <table class="table table-bordered table-hover text-center">
@@ -21,24 +21,37 @@
             <th class="fw-bold text-center"> @Html.DisplayNameFor(model => model.creditos) </th>
             <th class="fw-bold text-center"> @Html.DisplayNameFor(model => model.debitos) </th>
             <th class="fw-bold text-center"> @Html.DisplayNameFor(model => model.balance) </th>
-            <th class="fw-bold text-center"></th>
+            <th class="fw-bold text-center">Estado</th>
+            <th class="fw-bold text-center">Acciones</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
+
             <tr>
                 <td class="text-center"> @Html.DisplayFor(modelItem => item.numero) </td>
                 <td class="text-center"> @Html.DisplayFor(modelItem => item.descripcion) </td>
                 <td class="text-center"> @Html.DisplayFor(modelItem => item.creditos) </td>
                 <td class="text-center"> @Html.DisplayFor(modelItem => item.debitos) </td>
                 <td class="text-center"> @Html.DisplayFor(modelItem => item.balance) </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-success fw-bold">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info fw-bold">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger fw-bold">Delete</a>
+                <td class="text-center"> @(item.balance > 0 ? "Activo" : "Inactivo") </td>
+                <td class="text-center">
+                    @if (item.balance <= 0) // Inactivo
+                    {
+                        <button class="btn btn-secondary btn-sm" disabled>Editar</button>
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-primary btn-sm" })
+                    }
+
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm ms-1" })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm ms-1" })
                 </td>
+
             </tr>
         }
+
     </tbody>
 </table>
